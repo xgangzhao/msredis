@@ -25,7 +25,7 @@ impl ByteString {
     /// * `buf` - The initial string
     /// 
     pub fn new(s: &str) -> Self {
-        return ByteString{ buf: s.as_bytes().to_vec() };
+        return ByteString{buf: s.as_bytes().to_vec()};
     }
 
     /// Creates a new `ByteString` from a given ByteString.
@@ -35,7 +35,7 @@ impl ByteString {
     /// * `bs` - A ByteString
     ///
     pub fn new_from(bs: &ByteString) -> Self {
-        return ByteString { buf: bs.buf.clone() };
+        return ByteString{buf: bs.buf.clone()};
     }
 
     /// Creates a new `ByteString` from a given bytes stream
@@ -45,7 +45,7 @@ impl ByteString {
     /// * `ss` - A bytes stream
     ///
     pub fn new_from_bytes(ss: &[u8]) -> Self {
-        return ByteString { buf: ss.to_vec() }
+        return ByteString{buf: ss.to_vec()}
     }
 
     /// Duplicate a `ByteString` from itself.
@@ -55,7 +55,7 @@ impl ByteString {
     /// None
     ///
     pub fn dup(&self) -> ByteString {
-        return ByteString{ buf: self.buf.clone() };
+        return ByteString{buf: self.buf.clone()};
     }
 
     /// The number of elements in the ByteString.

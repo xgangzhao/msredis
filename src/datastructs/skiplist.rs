@@ -33,7 +33,7 @@ pub struct SkipListNode {
 #[derive(Clone)]
 struct SkipListLevel {
     forward: Option<Box<SkipListNode>>,
-    span: u32,
+    span: u64,
 }
 
 /// The struct of SkipList.
@@ -52,7 +52,7 @@ pub struct SkipList {
     header: Box<SkipListNode>,
     tail: Option<Box<SkipListNode>>,
     length: u64,
-    level: i32,
+    level: u16,
 }
 
 const SKIPLIST_MAXLEVEL: u16 = 64;
@@ -85,27 +85,37 @@ impl SkipList {
     }
 
     pub fn insert(&mut self, score: f64, ele: &[u8]) -> &SkipListNode {
-        let update = [&SkipListNode::new(&[],0., None, 0); SKIPLIST_MAXLEVEL as usize];
-        let rank = [0u32; SKIPLIST_MAXLEVEL as usize];
-        let x = self.header;
-        // let i = 0u16;
-        let level = 0u16;
+        let mut update: [Option<&Box<SkipListNode>>; SKIPLIST_MAXLEVEL as usize] = [None; SKIPLIST_MAXLEVEL as usize];
+        let mut rank = [0u64; SKIPLIST_MAXLEVEL as usize];
+        let x = &self.header;
 
-        for i in (0..self.level - 1).rev() {
-            rank[i as usize] = if i == self.level -1 {0} else {rank[i as usize - 1]};
-            if let Some(node) = x.level[i as usize].forward {
-                while node.score < score || (node.score == score && node.ele.cmp(&ele.to_vec()) == Ordering::Less) {
-                    rank[i as usize] += x.level[i as usize].span;
-                    x = node;
-                    if let Some(node) = x.level[i as usize].forward {}
+        for i in (0..self.level as usize).rev() {
+            if i == (self.level - 1) as usize {
+                rank[i] = 0;
+            } else {
+                rank[i] = rank[i+1];
+            }
+            if let Some(_node) = &x.level[i].forward {
+                while _node.score < score || (_node.score == score && _node.ele.cmp(&ele.to_vec()) == Ordering::Less) {
+                    rank[i] += x.level[i].span;
+                    let x = _node;
+                    if let Some(_node) = &x.level[i].forward {}
                     else {
                         break;
                     }
                 }
-                update[i as usize] = &x;
+                update[i] = Some(x);
             }
         }
 
+        let lv = SkipListNode::random_level();
+        if lv > self.level {
+            for i  in (self.level as usize..lv as usize) {
+                rank[i] = 0;
+                update[i] = Some(&self.header);
+                update[i].unwrap().level[i].span = self.length;
+            }
+        }
         return todo!();
     }
 }
